@@ -1,0 +1,161 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "doxygen@latest": {
+      "last_modified": "2026-02-23T15:40:43Z",
+      "resolved": "github:NixOS/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97#doxygen",
+      "source": "devbox-search",
+      "version": "1.16.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/vxgr3bd0q0m4rlhzwixsmdlgsbjrh8xh-doxygen-1.16.0",
+              "default": true
+            },
+            {
+              "name": "examples",
+              "path": "/nix/store/lhqp34wzmrg4aq47gpfawrrdpkj1kpm1-doxygen-1.16.0-examples"
+            }
+          ],
+          "store_path": "/nix/store/vxgr3bd0q0m4rlhzwixsmdlgsbjrh8xh-doxygen-1.16.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/7kkn7i20hdalsw9flmms30ajl9wz53x4-doxygen-1.16.0",
+              "default": true
+            },
+            {
+              "name": "examples",
+              "path": "/nix/store/ilir87i56gdyc0nl03zpqqifh0rp1la6-doxygen-1.16.0-examples"
+            }
+          ],
+          "store_path": "/nix/store/7kkn7i20hdalsw9flmms30ajl9wz53x4-doxygen-1.16.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/hsi9l5440h3gm1454ziabrikb7yzlcky-doxygen-1.16.0",
+              "default": true
+            },
+            {
+              "name": "examples",
+              "path": "/nix/store/b525vd3r8ddidgyxhsx3rsfa9jll2y8i-doxygen-1.16.0-examples"
+            }
+          ],
+          "store_path": "/nix/store/hsi9l5440h3gm1454ziabrikb7yzlcky-doxygen-1.16.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/z4cmbv0gmahjqrzws0rrv06fcp52p6f0-doxygen-1.16.0",
+              "default": true
+            },
+            {
+              "name": "examples",
+              "path": "/nix/store/5ah8rbgmcz06dw6nrmns996gm3cv4mkl-doxygen-1.16.0-examples"
+            }
+          ],
+          "store_path": "/nix/store/z4cmbv0gmahjqrzws0rrv06fcp52p6f0-doxygen-1.16.0"
+        }
+      }
+    },
+    "doxygen_gui@latest": {
+      "last_modified": "2026-02-23T15:40:43Z",
+      "resolved": "github:NixOS/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97#doxygen_gui",
+      "source": "devbox-search",
+      "version": "1.16.0",
+      "systems": {
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/71kk44zx7bzhd8z9f0b61yk4lv8dkx6s-doxygen-1.16.0",
+              "default": true
+            },
+            {
+              "name": "examples",
+              "path": "/nix/store/gm8lp8568vkm30rnw5r45m7jq1w310xp-doxygen-1.16.0-examples"
+            }
+          ],
+          "store_path": "/nix/store/71kk44zx7bzhd8z9f0b61yk4lv8dkx6s-doxygen-1.16.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/s244lpdhjz3z2mrjgacaw1g5wf7jngfp-doxygen-1.16.0",
+              "default": true
+            },
+            {
+              "name": "examples",
+              "path": "/nix/store/b0y1by9dxn24jwqam73sc0iwm2s40xrk-doxygen-1.16.0-examples"
+            }
+          ],
+          "store_path": "/nix/store/s244lpdhjz3z2mrjgacaw1g5wf7jngfp-doxygen-1.16.0"
+        }
+      }
+    },
+    "github:NixOS/nixpkgs/nixpkgs-unstable": {
+      "last_modified": "2026-03-11T04:01:32Z",
+      "resolved": "github:NixOS/nixpkgs/b6067cc0127d4db9c26c79e4de0513e58d0c40c9?lastModified=1773201692&narHash=sha256-NXrKzNMniu4Oam2kAFvqJ3GB2kAvlAFIriTAheaY8hw%3D"
+    },
+    "premake5@latest": {
+      "last_modified": "2026-03-01T09:58:01Z",
+      "resolved": "github:NixOS/nixpkgs/42bbf3e1e000963f4f3f37daa822c67c4d8856c4#premake5",
+      "source": "devbox-search",
+      "version": "5.0.0-beta8",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/ymllhv4kbh4yqz4rykqq642vmjr069a5-premake5-5.0.0-beta8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/ymllhv4kbh4yqz4rykqq642vmjr069a5-premake5-5.0.0-beta8"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/lw5cmv1xyjsc5j5jxra3qszsfxka18kf-premake5-5.0.0-beta8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/lw5cmv1xyjsc5j5jxra3qszsfxka18kf-premake5-5.0.0-beta8"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/asa40lwy9rvji9rkv8kjldqq86gg9fa4-premake5-5.0.0-beta8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/asa40lwy9rvji9rkv8kjldqq86gg9fa4-premake5-5.0.0-beta8"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/5icycr9hzlsgj8sn28qdb8fcyfpybch0-premake5-5.0.0-beta8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/5icycr9hzlsgj8sn28qdb8fcyfpybch0-premake5-5.0.0-beta8"
+        }
+      }
+    },
+    "raylib": {
+      "resolved": "github:NixOS/nixpkgs/b6067cc0127d4db9c26c79e4de0513e58d0c40c9?narHash=sha256-NXrKzNMniu4Oam2kAFvqJ3GB2kAvlAFIriTAheaY8hw%3D#raylib",
+      "source": "nixpkg"
+    }
+  }
+}

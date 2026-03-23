@@ -1,0 +1,8 @@
+.jj/
+.devbox/
+
+bin/
+docs/
+
+*.make
+Makefile

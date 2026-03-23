@@ -1,0 +1,6 @@
+BasedOnStyle: Google
+BreakBeforeBraces: Attach
+SortIncludes: Never
+ColumnLimit: 80
+Cpp11BracedListStyle: false
+BracedInitializerIndentWidth: 2

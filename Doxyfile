@@ -1,0 +1,26 @@
+# Nazwa projektu
+PROJECT_NAME           = "Arkanoid"
+
+# Katalog wejściowy (gdzie szukać kodu)
+INPUT                  = ./
+
+# Czy przeszukiwać podkatalogi (ball/, gui/ itp.)
+RECURSIVE              = YES
+
+# Katalog wyjściowy dokumentacji
+OUTPUT_DIRECTORY       = docs/
+
+# Generuj HTML (domyślnie YES)
+GENERATE_HTML          = YES
+
+# Generuj LaTeX (możesz wyłączyć jeśli nie potrzebujesz)
+GENERATE_LATEX         = NO
+
+# Wyciągaj dokumentację też z plików .c (nie tylko .h)
+EXTRACT_ALL            = YES
+
+# Pokaż też funkcje static
+EXTRACT_STATIC         = YES
+
+# Język
+OUTPUT_LANGUAGE        = Polish
