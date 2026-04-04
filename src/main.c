@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "gui/pause/pause.h"
 #include "entity/ball/ball.h"
+#include "entity/paddle/paddle.h"
 
 int main(void) {
   // Initialization
@@ -13,6 +14,9 @@ int main(void) {
   InitWindow(screenWidth, screenHeight, "Arkanoid");
 
   BallSpawn(NULL);
+
+  Paddle playerPaddle;
+  PaddleInit(&playerPaddle);
 
   int framesCounter = 0;
 
@@ -27,9 +31,19 @@ int main(void) {
     BeginDrawing();
     {
       PauseMenu();
+      PaddleDraw(&playerPaddle);
 
       if (!PAUSE) {
         BallUpdateAll();
+        PaddleUpdate(&playerPaddle);
+
+        Rectangle paddleRect = { 
+            playerPaddle.position.x,
+            playerPaddle.position.y, 
+            playerPaddle.size.x,
+            playerPaddle.size.y };
+
+        BallsCollideWithPaddle(paddleRect);
 
         if (IsKeyPressed(KEY_S)) BallSpawn(NULL);
 

@@ -10,7 +10,7 @@ static int ballCount = 0;
 
 static Vector2 defaultSpeed = { 5.0f, 5.0f };
 static int defaultRadius = 20;
-static Color defaultColor = MAROON;
+static Color defaultColor = { 190, 33, 55, 255 };
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -192,4 +192,35 @@ BallDefaults BallGetDefaults(void) {
     .radius = defaultRadius,
     .color = defaultColor,
   };
+}
+
+/**
+ * @brief Sprawdza kolizje wszystkich piłek z paletką i odbija je pod
+ * odpowiednim kątem.
+ */
+void BallsCollideWithPaddle(Rectangle paddle) {
+  for (int i = 0; i < ballCount; i++) {
+    if (!balls[i].active) continue;
+
+    if (CheckCollisionCircleRec(balls[i].position, (float)balls[i].radius,
+                                paddle)) {
+      if (balls[i].speed.y > 0.0f) {
+        balls[i].speed.y = -5.0f;
+
+        float paddleCenter = paddle.x + paddle.width / 2.0f;
+        float hitPoint =
+            (balls[i].position.x - paddleCenter) / (paddle.width / 2.0f);
+
+        balls[i].speed.x = hitPoint * 6.0f;
+
+        float minSpeedX = 1.5f;
+
+        if (balls[i].speed.x >= 0.0f && balls[i].speed.x < minSpeedX) {
+          balls[i].speed.x = minSpeedX;
+        } else if (balls[i].speed.x < 0.0f && balls[i].speed.x > -minSpeedX) {
+          balls[i].speed.x = -minSpeedX;
+        }
+      }
+    }
+  }
 }
