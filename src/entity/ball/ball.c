@@ -1,5 +1,6 @@
 #include "ball.h"
 #include <stdlib.h>
+#include "../brick/brick.h"
 
 // ---------------------------------------------------------------------------
 // State
@@ -219,6 +220,30 @@ void BallsCollideWithPaddle(Rectangle paddle) {
           balls[i].speed.x = minSpeedX;
         } else if (balls[i].speed.x < 0.0f && balls[i].speed.x > -minSpeedX) {
           balls[i].speed.x = -minSpeedX;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * @brief Sprawdza kolizje piłek z cegłami i niszczy je przy uderzeniu.
+ */
+void BallsCollideWithBricks(void) {
+  Brick* bricks = BricksGetAll();
+  int count = BricksGetCount();
+
+  for (int i = 0; i < ballCount; i++) {
+    if (!balls[i].active) continue;
+
+    for (int j = 0; j < count; j++) {
+      if (bricks[j].active && !bricks[j].isDying) {
+        if (CheckCollisionCircleRec(balls[i].position, (float)balls[i].radius,
+                                    bricks[j].rect)) {
+          bricks[j].isDying = true;
+
+          balls[i].speed.y *= -1.0f;
+          break;
         }
       }
     }

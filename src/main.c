@@ -3,6 +3,7 @@
 #include "gui/pause/pause.h"
 #include "entity/ball/ball.h"
 #include "entity/paddle/paddle.h"
+#include "entity/brick/brick.h"
 
 int main(void) {
   // Initialization
@@ -17,6 +18,8 @@ int main(void) {
 
   Paddle playerPaddle;
   PaddleInit(&playerPaddle);
+
+  BricksInit();
 
   int framesCounter = 0;
 
@@ -45,6 +48,10 @@ int main(void) {
 
         BallsCollideWithPaddle(paddleRect);
 
+        BallsCollideWithBricks();
+
+        BricksUpdate();
+
         if (IsKeyPressed(KEY_S)) BallSpawn(NULL);
 
         if (IsKeyPressed(KEY_UP)) {
@@ -63,6 +70,8 @@ int main(void) {
       }
 
       ClearBackground(RAYWHITE);
+
+      BricksDraw();
 
       BallDrawAll();
       // DrawText("PRESS SPACE to PAUSE BALL MOVEMENT", 10,

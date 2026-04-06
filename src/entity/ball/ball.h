@@ -36,3 +36,4 @@ void BallDrawAll(void);
 int BallGetCount(void);
 BallDefaults BallGetDefaults(void);
 void BallsCollideWithPaddle(Rectangle paddle);
+void BallsCollideWithBricks(void);
