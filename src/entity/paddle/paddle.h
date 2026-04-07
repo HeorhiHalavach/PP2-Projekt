@@ -1,17 +1,15 @@
-#ifndef PADDLE_H
-#define PADDLE_H
-
+#pragma once
 #include "raylib.h"
 
-typedef struct Paddle {
-  Vector2 position;
+typedef struct PaddleConfig {
   Vector2 size;
   float speed;
   Color color;
-} Paddle;
+} PaddleConfig;
 
-void PaddleInit(Paddle *paddle);
-void PaddleUpdate(Paddle *paddle);
-void PaddleDraw(Paddle *paddle);
+void PaddleInit(void);
+void PaddleSetConfig(PaddleConfig config);
+void PaddleUpdate(void);
+void PaddleDraw(void);
 
-#endif
+Rectangle PaddleGetRect(void);
