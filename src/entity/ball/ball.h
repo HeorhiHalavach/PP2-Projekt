@@ -30,8 +30,9 @@ void BallSpawnConfig(BallConfig config);
 void BallRemove(int count);
 
 void BallSetAll(BallConfig config);
-void BallUpdateAll(void);
+void BallUpdateAll(Rectangle* paddleRect);
 void BallDrawAll(void);
 
 int BallGetCount(void);
 BallDefaults BallGetDefaults(void);
+void BallsCollideWithBricks(void);

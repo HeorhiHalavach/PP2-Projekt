@@ -2,6 +2,8 @@
 #include "raylib.h"
 #include "gui/pause/pause.h"
 #include "entity/ball/ball.h"
+#include "entity/paddle/paddle.h"
+#include "entity/brick/brick.h"
 
 int main(void) {
   // Initialization
@@ -13,6 +15,8 @@ int main(void) {
   InitWindow(screenWidth, screenHeight, "Arkanoid");
 
   BallSpawn(NULL);
+  PaddleInit();
+  BricksInit();
 
   int framesCounter = 0;
 
@@ -24,38 +28,47 @@ int main(void) {
   {
     framesCounter++;
 
+    if (!PAUSE) {
+      Rectangle pRect = PaddleGetRect();
+      BallUpdateAll(&pRect);
+      PaddleUpdate();
+
+      BallsCollideWithBricks();
+      BricksUpdate();
+
+      if (IsKeyPressed(KEY_S)) BallSpawn(NULL);
+
+      if (IsKeyPressed(KEY_UP)) {
+        Vector2 currentSpeed = BallGetDefaults().speed;
+        BallSetAll(
+            (BallConfig){ .speed = &(Vector2){ currentSpeed.x + 1.0f,
+                                               currentSpeed.y + 1.0f } });
+      }
+      if (IsKeyPressed(KEY_DOWN)) {
+        Vector2 currentSpeed = BallGetDefaults().speed;
+        BallSetAll(
+            (BallConfig){ .speed = &(Vector2){ currentSpeed.x - 1.0f,
+                                               currentSpeed.y - 1.0f } });
+      }
+      if (IsKeyPressed(KEY_R)) BallRemove(BallGetCount() - 1);
+    }
+
     BeginDrawing();
     {
-      PauseMenu();
-
-      if (!PAUSE) {
-        BallUpdateAll();
-
-        if (IsKeyPressed(KEY_S)) BallSpawn(NULL);
-
-        if (IsKeyPressed(KEY_UP)) {
-          Vector2 currentSpeed = BallGetDefaults().speed;
-          BallSetAll(
-              (BallConfig){ .speed = &(Vector2){ currentSpeed.x + 1.0f,
-                                                 currentSpeed.y + 1.0f } });
-        }
-        if (IsKeyPressed(KEY_DOWN)) {
-          Vector2 currentSpeed = BallGetDefaults().speed;
-          BallSetAll(
-              (BallConfig){ .speed = &(Vector2){ currentSpeed.x - 1.0f,
-                                                 currentSpeed.y - 1.0f } });
-        }
-        if (IsKeyPressed(KEY_R)) BallRemove(BallGetCount() - 1);
-      }
-
       ClearBackground(RAYWHITE);
 
+      BricksDraw();
+      PaddleDraw();
       BallDrawAll();
+
       // DrawText("PRESS SPACE to PAUSE BALL MOVEMENT", 10,
       // GetScreenHeight() - 25, 20, LIGHTGRAY);
 
       // On pause, we draw a blinking message
       // if (PAUSE) DrawText("PAUSED", 350, 200, 30, GRAY);
+
+      PauseMenu();
+                   
 
       DrawFPS(10, 10);
       DrawText(TextFormat("BALLS: %i", BallGetCount()), 10, 30, 20, LIGHTGRAY);

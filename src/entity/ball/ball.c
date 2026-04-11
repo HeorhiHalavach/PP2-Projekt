@@ -1,5 +1,7 @@
 #include "ball.h"
 #include <stdlib.h>
+#include "../brick/brick.h"
+#include <math.h>
 
 // ---------------------------------------------------------------------------
 // State
@@ -10,7 +12,7 @@ static int ballCount = 0;
 
 static Vector2 defaultSpeed = { 5.0f, 5.0f };
 static int defaultRadius = 20;
-static Color defaultColor = MAROON;
+static Color defaultColor = { 190, 33, 55, 255 };
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -133,11 +135,13 @@ void BallSetAll(BallConfig cfg) {
   }
 }
 
-/**
- * @brief Aktualizuje pozycje wszystkich aktywnych piłek i obsługuje odbicia od
- * ścian. Koryguje pozycję piłki by nie wchodziła w ścianę.
+/** * @brief Aktualizuje pozycje wszystkich aktywnych piłek, obsługuje odbicia
+ * od ścian oraz opcjonalnie od paletki gracza. Koryguje pozycję piłki by nie
+ * wchodziła w przeszkody.
+ * @param paddleRect Wskaźnik na prostokąt paletki. Jeśli przekazano NULL,
+ * kolizja z paletką jest ignorowana.
  */
-void BallUpdateAll(void) {
+void BallUpdateAll(Rectangle* paddleRect) {
   int w = GetScreenWidth();
   int h = GetScreenHeight();
 
@@ -162,6 +166,25 @@ void BallUpdateAll(void) {
     } else if (b->position.y <= b->radius) {
       b->position.y = b->radius;
       b->speed.y *= -0.95f;
+    }
+
+    if (paddleRect != NULL) {
+      if (CheckCollisionCircleRec(b->position, (float)b->radius, *paddleRect)) {
+        float currentTotalSpeed =
+            sqrtf(b->speed.x * b->speed.x + b->speed.y * b->speed.y);
+        float paddleCenter = paddleRect->x + (paddleRect->width / 2.0f);
+        float hitFactor =
+            (b->position.x - paddleCenter) / (paddleRect->width / 2.0f);
+
+        b->speed.x =
+            hitFactor * 6.0f; 
+        b->speed.y = -5.0f;
+
+        float newDirectionMag =
+            sqrtf(b->speed.x * b->speed.x + b->speed.y * b->speed.y);
+        b->speed.x = (b->speed.x / newDirectionMag) * currentTotalSpeed;
+        b->speed.y = (b->speed.y / newDirectionMag) * currentTotalSpeed;
+      }
     }
   }
 }
@@ -192,4 +215,28 @@ BallDefaults BallGetDefaults(void) {
     .radius = defaultRadius,
     .color = defaultColor,
   };
+}
+
+/**
+ * @brief Sprawdza kolizje piłek z cegłami i niszczy je przy uderzeniu.
+ */
+void BallsCollideWithBricks(void) {
+  Brick* bricks = BricksGetAll();
+  int count = BricksGetCount();
+
+  for (int i = 0; i < ballCount; i++) {
+    if (!balls[i].active) continue;
+
+    for (int j = 0; j < count; j++) {
+      if (bricks[j].active && !bricks[j].isDying) {
+        if (CheckCollisionCircleRec(balls[i].position, (float)balls[i].radius,
+                                    bricks[j].rect)) {
+          bricks[j].isDying = true;
+
+          balls[i].speed.y *= -1.0f;
+          break;
+        }
+      }
+    }
+  }
 }
