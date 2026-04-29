@@ -1,18 +1,24 @@
 #include "brick.h"
+#include <stdbool.h>
+#include <stdlib.h>
 
 static Brick bricks[MAX_BRICKS] = { 0 };
+static Texture2D brickTexture;
 
 /**
  * @brief Inicjalizuje siatkę cegieł na górze ekranu.
  */
 void BricksInit(void) {
+  if (brickTexture.id == 0) {
+    brickTexture = LoadTexture("assets/brick_texture.png");
+  }
   int brickWidth = 60;
   int brickHeight = 20;
   int padding = 5;
   int offsetX =
       (GetScreenWidth() - (BRICK_COLUMNS * (brickWidth + padding))) / 2 +
       padding / 2;
-  int offsetY = 50; 
+  int offsetY = 50;
 
   Color rowColors[BRICK_ROWS] = { RED, ORANGE, YELLOW, GREEN, BLUE };
 
@@ -25,8 +31,8 @@ void BricksInit(void) {
       bricks[index].rect.width = brickWidth;
       bricks[index].rect.height = brickHeight;
 
-      bricks[index].active = true; 
-      bricks[index].color = rowColors[r]; 
+      bricks[index].active = true;
+      bricks[index].color = rowColors[r];
       bricks[index].isDying = false;
       bricks[index].alpha = 255;
     }
@@ -57,18 +63,31 @@ void BricksUpdate(void) {
  */
 void BricksDraw(void) {
   for (int i = 0; i < MAX_BRICKS; i++) {
-    if (bricks[i].active) {
-      Color drawColor = bricks[i].color;
-      drawColor.a = (unsigned char)bricks[i].alpha;
 
-      Color lineColor = BLACK;
-      lineColor.a = (unsigned char)bricks[i].alpha;
+    if (!bricks[i].active) continue;
 
-      DrawRectangleRec(bricks[i].rect, drawColor);
-      DrawRectangleLinesEx(bricks[i].rect, 1.0f, lineColor);
-    }
+    Color color = bricks[i].color;
+
+    color.a = bricks[i].alpha;
+
+    DrawTexturePro(brickTexture,
+                   (Rectangle){ 0.0f, 0.0f, (float)brickTexture.width,
+                                (float)brickTexture.height },
+                   bricks[i].rect, (Vector2){ 0.0f, 0.0f }, 0.0f,
+                   color
+    );
   }
 }
+
+bool BricksAreAllDestroyed(void) {
+  for (int i = 0; i < MAX_BRICKS; i++) {
+    if (bricks[i].active)
+      return false;
+  }
+  return true;
+}
+
+void BricksCleanup(void) { UnloadTexture(brickTexture); }
 
 /**
  * @brief Zwraca wskaźnik do tablicy wszystkich cegieł (przyda się do fizyki).

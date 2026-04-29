@@ -11,5 +11,7 @@ void PaddleInit(void);
 void PaddleSetConfig(PaddleConfig config);
 void PaddleUpdate(void);
 void PaddleDraw(void);
+void PaddleSetWidth(float width);
+void PaddleCleanup(void);
 
 Rectangle PaddleGetRect(void);

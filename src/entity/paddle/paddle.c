@@ -10,13 +10,19 @@ static struct {
   Color color;
 } paddle = { 0 };
 
+static Texture2D paddleTexture;
+
 /** * @brief Inicjalizuje paletkę gracza (ustawia rozmiar, pozycję, prędkość i
  * kolor). Paletka domyślnie pojawia się na środku, u dołu ekranu.
  */
 void PaddleInit(void) {
+  if (paddleTexture.id == 0) {
+    paddleTexture = LoadTexture("assets/paddle_texture.png");
+  }
+
   paddle.size = (Vector2){ 120.0f, 20.0f };
   paddle.speed = 8.0f;
-  paddle.color = DARKBLUE;
+  paddle.color = WHITE;
   paddle.position = (Vector2){ GetScreenWidth() / 2.0f - paddle.size.x / 2.0f,
                                GetScreenHeight() - 40.0f };
 }
@@ -50,7 +56,17 @@ void PaddleUpdate(void) {
 /** * @brief Rysuje paletkę na ekranie w aktualnej pozycji.
  */
 void PaddleDraw(void) {
-  DrawRectangleV(paddle.position, paddle.size, paddle.color);
+  if (paddleTexture.id != 0) {
+    DrawTexturePro(paddleTexture,
+                   (Rectangle){ 0.0f, 0.0f, (float)paddleTexture.width,
+                                (float)paddleTexture.height },
+                   (Rectangle){ paddle.position.x, paddle.position.y,
+                                paddle.size.x, paddle.size.y },
+                   (Vector2){ 0.0f, 0.0f }, 0.0f, paddle.color);
+  } else {
+    DrawRectangle(paddle.position.x, paddle.position.y, paddle.size.x,
+                  paddle.size.y, BLUE);
+  }
 }
 
 /**
@@ -60,4 +76,12 @@ void PaddleDraw(void) {
 Rectangle PaddleGetRect(void) {
   return (Rectangle){ paddle.position.x, paddle.position.y, paddle.size.x,
                       paddle.size.y };
+}
+
+void PaddleSetWidth(float width) { 
+    paddle.size.x = width; 
+}
+
+void PaddleCleanup(void) { 
+    UnloadTexture(paddleTexture); 
 }

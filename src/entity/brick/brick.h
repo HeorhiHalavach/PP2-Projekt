@@ -17,6 +17,8 @@ typedef struct Brick {
 void BricksInit(void);
 void BricksUpdate(void);
 void BricksDraw(void);
+void BricksCleanup(void);
+bool BricksAreAllDestroyed(void);
 
 Brick* BricksGetAll(void);
 int BricksGetCount(void);

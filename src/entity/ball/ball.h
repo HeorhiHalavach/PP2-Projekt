@@ -33,6 +33,7 @@ void BallSetAll(BallConfig config);
 void BallUpdateAll(Rectangle* paddleRect);
 void BallDrawAll(void);
 
-int BallGetCount(void);
+int BallGetCount(bool activeOnly);
 BallDefaults BallGetDefaults(void);
-void BallsCollideWithBricks(void);
+int BallsCollideWithBricks(void);
+void BallCleanup(void);

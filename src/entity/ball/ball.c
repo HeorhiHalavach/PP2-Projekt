@@ -1,6 +1,8 @@
 #include "ball.h"
 #include <stdlib.h>
 #include "../brick/brick.h"
+#include "../bonus/bonus.h"
+#include "../../audio/audio.h"
 #include <math.h>
 
 // ---------------------------------------------------------------------------
@@ -10,9 +12,11 @@
 static Ball balls[MAX_BALLS] = { 0 };
 static int ballCount = 0;
 
-static Vector2 defaultSpeed = { 5.0f, 5.0f };
-static int defaultRadius = 20;
+static Vector2 defaultSpeed = { 0.5f, 6.0f };
+static int defaultRadius = 10;
 static Color defaultColor = { 190, 33, 55, 255 };
+
+static Texture2D ballTexture;
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -69,6 +73,9 @@ static void SpawnBall(Vector2 position, Vector2 speed, int radius,
  * @param position Pozycja startowa lub NULL — wtedy środek ekranu.
  */
 void BallSpawn(Vector2* position) {
+  if (ballTexture.id == 0) {
+    ballTexture = LoadTexture("assets/ball_texture.png");
+  }
   Vector2 pos =
       position ? *position
                : (Vector2){ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
@@ -155,35 +162,40 @@ void BallUpdateAll(Rectangle* paddleRect) {
     if (b->position.x >= w - b->radius) {
       b->position.x = w - b->radius;
       b->speed.x *= -1.0f;
+      AudioPlay(SOUND_HIT_WALL);
     } else if (b->position.x <= b->radius) {
       b->position.x = b->radius;
       b->speed.x *= -1.0f;
+      AudioPlay(SOUND_HIT_WALL);
     }
 
-    if (b->position.y >= h - b->radius) {
-      b->position.y = h - b->radius;
-      b->speed.y *= -0.95f;
-    } else if (b->position.y <= b->radius) {
+    if (b->position.y <= b->radius) {
       b->position.y = b->radius;
-      b->speed.y *= -0.95f;
+      b->speed.y *= -1.0f;
+      AudioPlay(SOUND_HIT_WALL);
+    }
+
+    if (b->position.y >= h + b->radius) {
+      b->active = false;
     }
 
     if (paddleRect != NULL) {
-      if (CheckCollisionCircleRec(b->position, (float)b->radius, *paddleRect)) {
-        float currentTotalSpeed =
-            sqrtf(b->speed.x * b->speed.x + b->speed.y * b->speed.y);
-        float paddleCenter = paddleRect->x + (paddleRect->width / 2.0f);
-        float hitFactor =
-            (b->position.x - paddleCenter) / (paddleRect->width / 2.0f);
+      if (b->speed.y > 0 && CheckCollisionCircleRec(b->position, (float)b->radius, *paddleRect)) {
+        if (b->position.y < paddleRect->y + (paddleRect->height / 2.0f)) {
+          float BASE_SPEED = 6.0f;
+          float paddleCenter = paddleRect->x + (paddleRect->width / 2.0f);
+          float hitFactor =
+              (b->position.x - paddleCenter) / (paddleRect->width / 2.0f);
 
-        b->speed.x =
-            hitFactor * 6.0f; 
-        b->speed.y = -5.0f;
+          b->speed.x = hitFactor * 6.0f;
+          b->speed.y = -5.0f;
 
-        float newDirectionMag =
-            sqrtf(b->speed.x * b->speed.x + b->speed.y * b->speed.y);
-        b->speed.x = (b->speed.x / newDirectionMag) * currentTotalSpeed;
-        b->speed.y = (b->speed.y / newDirectionMag) * currentTotalSpeed;
+          float newDirectionMag =
+              sqrtf(b->speed.x * b->speed.x + b->speed.y * b->speed.y);
+          b->speed.x = (b->speed.x / newDirectionMag) * BASE_SPEED;
+          b->speed.y = (b->speed.y / newDirectionMag) * BASE_SPEED;
+          AudioPlay(SOUND_HIT_PADDLE);
+        }
       }
     }
   }
@@ -195,7 +207,19 @@ void BallUpdateAll(Rectangle* paddleRect) {
 void BallDrawAll(void) {
   for (int i = 0; i < ballCount; i++) {
     if (!balls[i].active) continue;
-    DrawCircleV(balls[i].position, (float)balls[i].radius, balls[i].color);
+
+    if (ballTexture.id != 0) {
+      Rectangle source = { 0.0f, 0.0f, (float)ballTexture.width,
+                           (float)ballTexture.height };
+      Rectangle dest = { balls[i].position.x, balls[i].position.y,
+                         (float)balls[i].radius * 2,
+                         (float)balls[i].radius * 2 };
+      Vector2 origin = { (float)balls[i].radius, (float)balls[i].radius };
+
+      DrawTexturePro(ballTexture, source, dest, origin, 0.0f, WHITE);
+    } else {
+      DrawCircleV(balls[i].position, (float)balls[i].radius, balls[i].color);
+    }
   }
 }
 
@@ -203,7 +227,19 @@ void BallDrawAll(void) {
  * @brief Zwraca aktualną liczbę piłek.
  * @return Liczba aktywnych piłek.
  */
-int BallGetCount(void) { return ballCount; }
+int BallGetCount(bool activeOnly) {
+  if (!activeOnly) {
+    return ballCount;
+  }
+
+  int count = 0;
+  for (int i = 0; i < ballCount; i++) {
+    if (balls[i].active) {
+      count++;
+    }
+  }
+  return count;
+}
 
 /**
  * @brief Zwraca aktualne wartości domyślne piłek.
@@ -220,7 +256,8 @@ BallDefaults BallGetDefaults(void) {
 /**
  * @brief Sprawdza kolizje piłek z cegłami i niszczy je przy uderzeniu.
  */
-void BallsCollideWithBricks(void) {
+int BallsCollideWithBricks(void) {
+  int pointsEarned = 0;
   Brick* bricks = BricksGetAll();
   int count = BricksGetCount();
 
@@ -233,10 +270,43 @@ void BallsCollideWithBricks(void) {
                                     bricks[j].rect)) {
           bricks[j].isDying = true;
 
-          balls[i].speed.y *= -1.0f;
+          if (GetRandomValue(1, 100) <= 10) {
+            BonusType type = (GetRandomValue(0, 1) == 0) ? BONUS_MULTIBALL
+                                                         : BONUS_WIDE_PADDLE;
+            BonusSpawn(bricks[j].rect.x + bricks[j].rect.width / 2.0f - 15.0f,
+                       bricks[j].rect.y, type);
+          }
+          AudioPlay(SOUND_BREAK_BRICK);
+
+          float overlapLeft =
+              (balls[i].position.x + balls[i].radius) - bricks[j].rect.x;
+          float overlapRight = (bricks[j].rect.x + bricks[j].rect.width) -
+                               (balls[i].position.x - balls[i].radius);
+          float overlapTop =
+              (balls[i].position.y + balls[i].radius) - bricks[j].rect.y;
+          float overlapBottom = (bricks[j].rect.y + bricks[j].rect.height) -
+                                (balls[i].position.y - balls[i].radius);
+
+          bool fromLeft = overlapLeft < overlapRight;
+          float minOverlapX = fromLeft ? overlapLeft : overlapRight;
+
+          bool fromTop = overlapTop < overlapBottom;
+          float minOverlapY = fromTop ? overlapTop : overlapBottom;
+
+          if (minOverlapX < minOverlapY) {
+            balls[i].speed.x *= -1.0f; 
+          } else {
+            balls[i].speed.y *=
+                -1.0f; 
+          }
+
+          pointsEarned += 100;
           break;
         }
       }
     }
   }
+  return pointsEarned;
 }
+
+void BallCleanup(void) { UnloadTexture(ballTexture); }
